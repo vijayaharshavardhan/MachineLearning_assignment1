@@ -122,14 +122,21 @@ def regressionObjVal(w, X, y, lambd):
     # lambda                                                                  
 
     # IMPLEMENT THIS METHOD  
-    a = y - np.matmul(X,w)
-    error_grad = (0.5)*(np.matmul(a.transpose(),a))
-    error = (0.5)*((np.matmul(a.transpose(),a)) + (lambd*np.matmul(w.transpose(),w) ))
-    error = np.asmatrix(error)
-    error_grad = np.asmatrix(error_grad)
-    print("error:",error)
-    print("error_grad:",error_grad)
-    return error.all, error_grad.all                                           
+    w = w.reshape(-1,1)
+    w_transpose = w.T
+    x_transpose = X.T
+    a = np.dot(X,w)
+    b = (y - a)
+    first = np.dot(np.transpose(b),b)
+    second = lambd * np.dot(w_transpose,w)
+    error = (first + second)/2
+    c = np.dot(x_transpose,X)
+    d = np.dot(x_transpose,y)
+    third = np.dot(c,w)
+    error_grad = third - d + lambd*w
+    error_grad = error_grad.flatten() #To align the shape
+    
+    return error, error_grad                                          
 
 def mapNonLinear(x,p):
     # Inputs:                                                                  
@@ -265,11 +272,9 @@ pmax = 7
 lambda_opt = 0 # REPLACE THIS WITH lambda_opt estimated from Problem 3
 mses5_train = np.zeros((pmax,2))
 mses5 = np.zeros((pmax,2))
-print('X:',X)
 for p in range(pmax):
  Xd = mapNonLinear(X[:,2],p)
  Xdtest = mapNonLinear(Xtest[:,2],p)
- #print(Xd)
  w_d1 = learnRidgeRegression(Xd,y,0)
  mses5_train[p,0] = testOLERegression(w_d1,Xd,y)
  mses5[p,0] = testOLERegression(w_d1,Xdtest,ytest)
