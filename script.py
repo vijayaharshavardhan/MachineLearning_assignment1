@@ -225,6 +225,8 @@ for lambd in lambdas:
     mses3_train[i] = testOLERegression(w_l,X_i,y)
     mses3[i] = testOLERegression(w_l,Xtest_i,ytest)
     i = i + 1
+print("MSE for training:",mses3_train)
+print("MSE for testing:",mses3)
 fig = plt.figure(figsize=[12,6])
 plt.subplot(1, 2, 1)
 plt.plot(lambdas,mses3_train)
