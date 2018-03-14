@@ -328,9 +328,13 @@ def mapNonLinear(x,p):
     # Xp - (N x (p+1)) 
     
     # IMPLEMENT THIS METHOD
-    Xp=(np.power(x,p))
-    Xp = np.asmatrix(Xp)
-    Xp=Xp.transpose()
+    #Xp=(np.power(x,p))
+    #Xp = np.asmatrix(Xp)
+    #Xp=Xp.transpose()
+    
+    Xp = np.ones((x.shape[0], p+1)) #set size of Xp to be (N X (p+1))
+    for index in range(p+1):
+      Xp[:, index] = np.power(x,index)
     return Xp
 
 # Main script
