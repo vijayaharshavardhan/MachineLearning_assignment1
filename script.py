@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pickle
 import sys
 
-def ldaLearn(X,y):
+#def ldaLearn(X,y):
     # Inputs
     # X - a N x d matrix with each row corresponding to a training example
     # y - a N x 1 column vector indicating the labels for each training example
@@ -18,9 +18,9 @@ def ldaLearn(X,y):
     # covmat - A single d x d learnt covariance matrix 
     
     # IMPLEMENT THIS METHOD 
-    return means,covmat
+ #   return means,covmat
 
-def qdaLearn(X,y):
+#def qdaLearn(X,y):
     # Inputs
     # X - a N x d matrix with each row corresponding to a training example
     # y - a N x 1 column vector indicating the labels for each training example
@@ -30,9 +30,9 @@ def qdaLearn(X,y):
     # covmats - A list of k d x d learnt covariance matrices for each of the k classes
     
     # IMPLEMENT THIS METHOD
-    return means,covmats
+ #   return means,covmats
 
-def ldaTest(means,covmat,Xtest,ytest):
+#def ldaTest(means,covmat,Xtest,ytest):
     # Inputs
     # means, covmat - parameters of the LDA model
     # Xtest - a N x d matrix with each row corresponding to a test example
@@ -42,9 +42,9 @@ def ldaTest(means,covmat,Xtest,ytest):
     # ypred - N x 1 column vector indicating the predicted labels
 
     # IMPLEMENT THIS METHOD
-    return acc,ypred
+ #   return acc,ypred
 
-def qdaTest(means,covmats,Xtest,ytest):
+#def qdaTest(means,covmats,Xtest,ytest):
     # Inputs
     # means, covmats - parameters of the QDA model
     # Xtest - a N x d matrix with each row corresponding to a test example
@@ -54,7 +54,7 @@ def qdaTest(means,covmats,Xtest,ytest):
     # ypred - N x 1 column vector indicating the predicted labels
 
     # IMPLEMENT THIS METHOD
-    return acc,ypred
+ #   return acc,ypred
 
 def learnOLERegression(X,y):
     # Inputs:                                                         
@@ -81,7 +81,18 @@ def learnRidgeRegression(X,y,lambd):
     # Output:                                                                  
     # w = d x 1                                                                
 
-    # IMPLEMENT THIS METHOD                                                   
+    # IMPLEMENT THIS METHOD 
+    X_mat=np.asmatrix(X)
+#    print("LR:",X_mat)
+    X_transpose = X_mat.transpose()
+    i_mat=np.identity(X_mat.shape[1])
+    first=lambd*i_mat
+    second=np.matmul(X_transpose,X_mat)
+    third=first+second
+    fourth=inv(third)
+    fifth=np.matmul(fourth,X_transpose)
+    final=np.matmul(fifth,y) 
+    w=final                                                 
     return w
 
 def testOLERegression(w,Xtest,ytest):
@@ -110,8 +121,15 @@ def regressionObjVal(w, X, y, lambd):
     # to w (vector) for the given data X and y and the regularization parameter
     # lambda                                                                  
 
-    # IMPLEMENT THIS METHOD                                             
-    return error, error_grad
+    # IMPLEMENT THIS METHOD  
+    a = y - np.matmul(X,w)
+    error_grad = (0.5)*(np.matmul(a.transpose(),a))
+    error = (0.5)*((np.matmul(a.transpose(),a)) + (lambd*np.matmul(w.transpose(),w) ))
+    error = np.asmatrix(error)
+    error_grad = np.asmatrix(error_grad)
+    print("error:",error)
+    print("error_grad:",error_grad)
+    return error.all, error_grad.all                                           
 
 def mapNonLinear(x,p):
     # Inputs:                                                                  
@@ -121,6 +139,9 @@ def mapNonLinear(x,p):
     # Xp - (N x (p+1)) 
     
     # IMPLEMENT THIS METHOD
+    Xp=(np.power(x,p))
+    Xp = np.asmatrix(Xp)
+    Xp=Xp.transpose()
     return Xp
 
 # Main script
@@ -166,6 +187,7 @@ def mapNonLinear(x,p):
 
 # plt.show()
 # Problem 2
+print('Problem 2:')
 if sys.version_info.major == 2:
     X,y,Xtest,ytest = pickle.load(open('diabetes.pickle','rb'))
 else:
@@ -185,78 +207,83 @@ print('MSE without intercept '+str(mle))
 print('MSE with intercept '+str(mle_i))
 
 # # Problem 3
-# k = 101
-# lambdas = np.linspace(0, 1, num=k)
-# i = 0
-# mses3_train = np.zeros((k,1))
-# mses3 = np.zeros((k,1))
-# for lambd in lambdas:
-#     w_l = learnRidgeRegression(X_i,y,lambd)
-#     mses3_train[i] = testOLERegression(w_l,X_i,y)
-#     mses3[i] = testOLERegression(w_l,Xtest_i,ytest)
-#     i = i + 1
-# fig = plt.figure(figsize=[12,6])
-# plt.subplot(1, 2, 1)
-# plt.plot(lambdas,mses3_train)
-# plt.title('MSE for Train Data')
-# plt.subplot(1, 2, 2)
-# plt.plot(lambdas,mses3)
-# plt.title('MSE for Test Data')
+print('Problem 3:')
+k = 101
+lambdas = np.linspace(0, 1, num=k)
+i = 0
+mses3_train = np.zeros((k,1))
+mses3 = np.zeros((k,1))
+for lambd in lambdas:
+    w_l = learnRidgeRegression(X_i,y,lambd)
+    mses3_train[i] = testOLERegression(w_l,X_i,y)
+    mses3[i] = testOLERegression(w_l,Xtest_i,ytest)
+    i = i + 1
+fig = plt.figure(figsize=[12,6])
+plt.subplot(1, 2, 1)
+plt.plot(lambdas,mses3_train)
+plt.title('MSE for Train Data')
+plt.subplot(1, 2, 2)
+plt.plot(lambdas,mses3)
+plt.title('MSE for Test Data')
+plt.show()
 
-# plt.show()
 # # Problem 4
-# k = 101
-# lambdas = np.linspace(0, 1, num=k)
-# i = 0
-# mses4_train = np.zeros((k,1))
-# mses4 = np.zeros((k,1))
-# opts = {'maxiter' : 20}    # Preferred value.                                                
-# w_init = np.ones((X_i.shape[1],1))
-# for lambd in lambdas:
-#     args = (X_i, y, lambd)
-#     w_l = minimize(regressionObjVal, w_init, jac=True, args=args,method='CG', options=opts)
-#     w_l = np.transpose(np.array(w_l.x))
-#     w_l = np.reshape(w_l,[len(w_l),1])
-#     mses4_train[i] = testOLERegression(w_l,X_i,y)
-#     mses4[i] = testOLERegression(w_l,Xtest_i,ytest)
-#     i = i + 1
-# fig = plt.figure(figsize=[12,6])
-# plt.subplot(1, 2, 1)
-# plt.plot(lambdas,mses4_train)
-# plt.plot(lambdas,mses3_train)
-# plt.title('MSE for Train Data')
-# plt.legend(['Using scipy.minimize','Direct minimization'])
+print('Problem 4:')
+k = 101
+lambdas = np.linspace(0, 1, num=k)
+i = 0
+mses4_train = np.zeros((k,1))
+mses4 = np.zeros((k,1))
+opts = {'maxiter' : 20}    # Preferred value.                                                
+w_init = np.ones((X_i.shape[1],1))
+for lambd in lambdas:
+    args = (X_i, y, lambd)
+    w_l = minimize(regressionObjVal, w_init, jac=True, args=args,method='CG', options=opts)
+    w_l = np.transpose(np.array(w_l.x))
+    w_l = np.reshape(w_l,[len(w_l),1])
+    mses4_train[i] = testOLERegression(w_l,X_i,y)
+    mses4[i] = testOLERegression(w_l,Xtest_i,ytest)
+    i = i + 1
+fig = plt.figure(figsize=[12,6])
+plt.subplot(1, 2, 1)
+plt.plot(lambdas,mses4_train)
+plt.plot(lambdas,mses3_train)
+plt.title('MSE for Train Data')
+plt.legend(['Using scipy.minimize','Direct minimization'])
 
-# plt.subplot(1, 2, 2)
-# plt.plot(lambdas,mses4)
-# plt.plot(lambdas,mses3)
-# plt.title('MSE for Test Data')
-# plt.legend(['Using scipy.minimize','Direct minimization'])
-# plt.show()
+plt.subplot(1, 2, 2)
+plt.plot(lambdas,mses4)
+plt.plot(lambdas,mses3)
+plt.title('MSE for Test Data')
+plt.legend(['Using scipy.minimize','Direct minimization'])
+plt.show()
 
 
-# # Problem 5
-# pmax = 7
-# lambda_opt = 0 # REPLACE THIS WITH lambda_opt estimated from Problem 3
-# mses5_train = np.zeros((pmax,2))
-# mses5 = np.zeros((pmax,2))
-# for p in range(pmax):
-#     Xd = mapNonLinear(X[:,2],p)
-#     Xdtest = mapNonLinear(Xtest[:,2],p)
-#     w_d1 = learnRidgeRegression(Xd,y,0)
-#     mses5_train[p,0] = testOLERegression(w_d1,Xd,y)
-#     mses5[p,0] = testOLERegression(w_d1,Xdtest,ytest)
-#     w_d2 = learnRidgeRegression(Xd,y,lambda_opt)
-#     mses5_train[p,1] = testOLERegression(w_d2,Xd,y)
-#     mses5[p,1] = testOLERegression(w_d2,Xdtest,ytest)
+ # Problem 5
+print('Problem 5:')
+pmax = 7
+lambda_opt = 0 # REPLACE THIS WITH lambda_opt estimated from Problem 3
+mses5_train = np.zeros((pmax,2))
+mses5 = np.zeros((pmax,2))
+print('X:',X)
+for p in range(pmax):
+ Xd = mapNonLinear(X[:,2],p)
+ Xdtest = mapNonLinear(Xtest[:,2],p)
+ #print(Xd)
+ w_d1 = learnRidgeRegression(Xd,y,0)
+ mses5_train[p,0] = testOLERegression(w_d1,Xd,y)
+ mses5[p,0] = testOLERegression(w_d1,Xdtest,ytest)
+ w_d2 = learnRidgeRegression(Xd,y,lambda_opt)
+ mses5_train[p,1] = testOLERegression(w_d2,Xd,y)
+ mses5[p,1] = testOLERegression(w_d2,Xdtest,ytest)
 
-# fig = plt.figure(figsize=[12,6])
-# plt.subplot(1, 2, 1)
-# plt.plot(range(pmax),mses5_train)
-# plt.title('MSE for Train Data')
-# plt.legend(('No Regularization','Regularization'))
-# plt.subplot(1, 2, 2)
-# plt.plot(range(pmax),mses5)
-# plt.title('MSE for Test Data')
-# plt.legend(('No Regularization','Regularization'))
-# plt.show()
+fig = plt.figure(figsize=[12,6])
+plt.subplot(1, 2, 1)
+plt.plot(range(pmax),mses5_train)
+plt.title('MSE for Train Data')
+plt.legend(('No Regularization','Regularization'))
+plt.subplot(1, 2, 2)
+plt.plot(range(pmax),mses5)
+plt.title('MSE for Test Data')
+plt.legend(('No Regularization','Regularization'))
+plt.show()
