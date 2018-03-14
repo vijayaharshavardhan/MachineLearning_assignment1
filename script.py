@@ -7,7 +7,7 @@ import scipy.io
 import matplotlib.pyplot as plt
 import pickle
 import sys
-
+from scipy.stats import multivariate_normal
 def find_covariance(input_mat,mean,pool_cov_base): # function to find covariance for each class
     first=input_mat-mean
     second=first.transpose()
@@ -352,29 +352,28 @@ qdaacc,qdares = qdaTest(means,covmats,Xtest,ytest)
 print('QDA Accuracy = '+str(qdaacc))
 
 # # plotting boundaries
-# x1 = np.linspace(-5,20,100)
-# x2 = np.linspace(-5,20,100)
-# xx1,xx2 = np.meshgrid(x1,x2)
-# xx = np.zeros((x1.shape[0]*x2.shape[0],2))
-# xx[:,0] = xx1.ravel()
-# xx[:,1] = xx2.ravel()
+x1 = np.linspace(-5,20,100)
+x2 = np.linspace(-5,20,100)
+xx1,xx2 = np.meshgrid(x1,x2)
+xx = np.zeros((x1.shape[0]*x2.shape[0],2))
+xx[:,0] = xx1.ravel()
+xx[:,1] = xx2.ravel()
 
-# fig = plt.figure(figsize=[12,6])
-# plt.subplot(1, 2, 1)
+fig = plt.figure(figsize=[12,6])
+plt.subplot(1, 2, 1)
 
-# zacc,zldares = ldaTest(means,covmat,xx,np.zeros((xx.shape[0],1)))
-# plt.contourf(x1,x2,zldares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
-# plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest)
-# plt.title('LDA')
+zacc,zldares = ldaTest(means,covmat,xx,np.zeros((xx.shape[0],1)))
+plt.contourf(x1,x2,zldares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
+plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.flatten())
+plt.title('LDA')
 
-# plt.subplot(1, 2, 2)
+plt.subplot(1, 2, 2)
 
-# zacc,zqdares = qdaTest(means,covmats,xx,np.zeros((xx.shape[0],1)))
-# plt.contourf(x1,x2,zqdares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
-# plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest)
-# plt.title('QDA')
-
-# plt.show()
+zacc,zqdares = qdaTest(means,covmats,xx,np.zeros((xx.shape[0],1)))
+plt.contourf(x1,x2,zqdares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
+plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.flatten())
+plt.title('QDA')
+plt.show()
 # Problem 2
 print('Problem 2:')
 if sys.version_info.major == 2:
