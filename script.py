@@ -264,10 +264,10 @@ def learnRidgeRegression(X,y,lambd):
     # w = d x 1                                                                
 
     # IMPLEMENT THIS METHOD 
-    X_mat=np.asmatrix(X)
+    X_mat=np.asmatrix(X) #Make X a matrix
 #    print("LR:",X_mat)
-    X_transpose = X_mat.transpose()
-    i_mat=np.identity(X_mat.shape[1])
+    X_transpose = X_mat.transpose() #Transpose of X
+    i_mat=np.identity(X_mat.shape[1]) #Define Indentity matrix of d
     first=lambd*i_mat
     second=np.matmul(X_transpose,X_mat)
     third=first+second
@@ -304,18 +304,18 @@ def regressionObjVal(w, X, y, lambd):
     # lambda                                                                  
 
     # IMPLEMENT THIS METHOD  
-    w = w.reshape(-1,1)
-    w_transpose = w.T
-    x_transpose = X.T
+    w = w.reshape(-1,1) #resize w
+    w_transpose = w.transpose()
+    x_transpose = X.transpose()
     a = np.dot(X,w)
     b = (y - a)
     first = np.dot(np.transpose(b),b)
     second = lambd * np.dot(w_transpose,w)
-    error = (first + second)/2
+    error = (first + second)/2 #squared error
     c = np.dot(x_transpose,X)
     d = np.dot(x_transpose,y)
     third = np.dot(c,w)
-    error_grad = third - d + lambd*w
+    error_grad = third - d + lambd*w #gradient of squared error
     error_grad = error_grad.flatten() #To align the shape
     
     return error, error_grad                                          
@@ -340,6 +340,7 @@ def mapNonLinear(x,p):
 # Main script
 
 # Problem 1
+print('Problem 2:')
 # load the sample data                                                                 
 if sys.version_info.major == 2:
     X,y,Xtest,ytest = pickle.load(open('sample.pickle','rb'))
@@ -410,8 +411,6 @@ for lambd in lambdas:
     mses3_train[i] = testOLERegression(w_l,X_i,y)
     mses3[i] = testOLERegression(w_l,Xtest_i,ytest)
     i = i + 1
-print("MSE for training:",mses3_train)
-print("MSE for testing:",mses3)
 fig = plt.figure(figsize=[12,6])
 plt.subplot(1, 2, 1)
 plt.plot(lambdas,mses3_train)
