@@ -392,10 +392,12 @@ Xtest_i = np.concatenate((np.ones((Xtest.shape[0],1)), Xtest), axis=1)
 
 w = learnOLERegression(X,y)
 mle = testOLERegression(w,Xtest,ytest)
-
+mle_train = testOLERegression(w,X,y)
+print("MLE_train",mle_train)
 w_i = learnOLERegression(X_i,y)
 mle_i = testOLERegression(w_i,Xtest_i,ytest)
-
+mle_i_train = testOLERegression(w_i,X_i,y)
+print("MLE_i_train",mle_i_train)
 print('MSE without intercept '+str(mle))
 print('MSE with intercept '+str(mle_i))
 
@@ -406,11 +408,21 @@ lambdas = np.linspace(0, 1, num=k)
 i = 0
 mses3_train = np.zeros((k,1))
 mses3 = np.zeros((k,1))
+min_mse=0
 for lambd in lambdas:
     w_l = learnRidgeRegression(X_i,y,lambd)
     mses3_train[i] = testOLERegression(w_l,X_i,y)
     mses3[i] = testOLERegression(w_l,Xtest_i,ytest)
+    if i==0:
+        min_mse=mses3[i]
+    if mses3[i] < min_mse:
+        min_mse=mses3[i]
+        opt_lambd=lambd
     i = i + 1
+
+print("Lambdas",lambd)
+print("Optimal Lambd",opt_lambd)
+print("Minimum mse",min_mse)
 fig = plt.figure(figsize=[12,6])
 plt.subplot(1, 2, 1)
 plt.plot(lambdas,mses3_train)
@@ -436,7 +448,16 @@ for lambd in lambdas:
     w_l = np.reshape(w_l,[len(w_l),1])
     mses4_train[i] = testOLERegression(w_l,X_i,y)
     mses4[i] = testOLERegression(w_l,Xtest_i,ytest)
+    print(mses4[i])
+    if i==0:
+        min__gr_mse=mses4[i]
+    if mses4[i] < min__gr_mse:
+        min__gr_mse=mses4[i]
+        opt_gr_lambd=lambd
     i = i + 1
+
+print("Min_gr_mse",min__gr_mse)
+print("opt_gr_lambd",opt_gr_lambd)
 fig = plt.figure(figsize=[12,6])
 plt.subplot(1, 2, 1)
 plt.plot(lambdas,mses4_train)
@@ -455,19 +476,51 @@ plt.show()
  # Problem 5
 print('Problem 5:')
 pmax = 7
-lambda_opt = 0 # REPLACE THIS WITH lambda_opt estimated from Problem 3
+lambda_opt = 0.06 # REPLACE THIS WITH lambda_opt estimated from Problem 3
 mses5_train = np.zeros((pmax,2))
 mses5 = np.zeros((pmax,2))
+i=0
+min_mse1=0
+min_mse2=0
+min_mse3=0
+min_mse4=0
 for p in range(pmax):
  Xd = mapNonLinear(X[:,2],p)
  Xdtest = mapNonLinear(Xtest[:,2],p)
  w_d1 = learnRidgeRegression(Xd,y,0)
  mses5_train[p,0] = testOLERegression(w_d1,Xd,y)
- mses5[p,0] = testOLERegression(w_d1,Xdtest,ytest)
+ mses5[p,0] = testOLERegression(w_d1,Xdtest,ytest)  
  w_d2 = learnRidgeRegression(Xd,y,lambda_opt)
  mses5_train[p,1] = testOLERegression(w_d2,Xd,y)
  mses5[p,1] = testOLERegression(w_d2,Xdtest,ytest)
+ if i==0:
+        min_mse1=mses5[p,0]
+        min_mse2=mses5[p,1]
+        min_mse3=mses5_train[p,0]
+        min_mse4=mses5_train[p,1]
+ if mses5[p,0]<min_mse1:
+    min_mse1=mses5[p,0]
+    p1=p        
+ if mses5[p,1]<min_mse2:
+    min_mse2=mses5[p,1]
+    p2=p
+ if mses5_train[p,0]<min_mse3:
+    min_mse3=mses5_train[p,0]
+    p3=p  
+ if mses5_train[p,1]<min_mse4:
+    min_mse4=mses5_train[p,1]
+    p4=p  
+ 
+ i=i+1  
+print("Minmse1",min_mse1)
+print("Minmse2",min_mse2)
+print("Minmse3",min_mse3)
+print("Minmse4",min_mse4)
 
+print("P1",p1)
+print("P2",p2)
+print("P3",p3)
+print("P4",p4)
 fig = plt.figure(figsize=[12,6])
 plt.subplot(1, 2, 1)
 plt.plot(range(pmax),mses5_train)
@@ -478,3 +531,4 @@ plt.plot(range(pmax),mses5)
 plt.title('MSE for Test Data')
 plt.legend(('No Regularization','Regularization'))
 plt.show()
+
